@@ -32,7 +32,7 @@ export default async function AccountPage({
   const plan = member.plan ? planById(member.plan) : null;
   const current = membershipIsCurrent(member.subscriptionStatus) && plan !== null;
   const bookingOpen = canRequestHire(member.subscriptionStatus);
-  const hires = bookingOpen ? listHires(member.id) : [];
+  const hires = bookingOpen ? await listHires(member.id) : [];
   const notice =
     params.requested === "1"
       ? params.mail === "0"

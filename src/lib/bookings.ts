@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { Member } from "@/lib/auth";
-import { getDb } from "@/lib/db";
+import { databaseUrl, dbAll, dbOne } from "@/lib/db";
 
 const maxNote = 500;
 const maxPlace = 120;
@@ -90,31 +90,31 @@ export function validateHire(input: {
 }
 
 export function listHires(userId: string) {
-  return getDb()
-    .prepare(
-      `SELECT id, pickup, destination, journey_date AS journeyDate, journey_time AS journeyTime,
-              note, status, created_at AS createdAt
-       FROM bookings WHERE user_id = ? ORDER BY created_at DESC`,
-    )
-    .all(userId) as HireRequest[];
+  return dbAll<HireRequest>(
+    `SELECT id, pickup, destination, journey_date AS "journeyDate", journey_time AS "journeyTime",
+            note, status, created_at AS "createdAt"
+     FROM bookings WHERE user_id = $1 ORDER BY created_at DESC`,
+    [userId],
+  );
 }
 
-export function createHireRequest(
+export async function createHireRequest(
   member: Member,
   input: { date: string; time: string; pickup: string; destination: string; note: string },
 ) {
   if (!canRequestHire(member.subscriptionStatus)) {
     return { ok: false as const, error: "An active membership is needed before a hire can be requested." };
   }
+  if (!databaseUrl()) {
+    return { ok: false as const, error: "Accounts are not available just now." };
+  }
   const parsed = validateHire(input);
   if (!parsed.ok) return parsed;
 
-  getDb()
-    .prepare(
-      `INSERT INTO bookings (id, user_id, pickup, destination, journey_date, journey_time, note, status, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 'requested', ?)`,
-    )
-    .run(
+  await dbOne(
+    `INSERT INTO bookings (id, user_id, pickup, destination, journey_date, journey_time, note, status, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, 'requested', $8)`,
+    [
       randomUUID(),
       member.id,
       parsed.value.pickup,
@@ -123,7 +123,8 @@ export function createHireRequest(
       parsed.value.time,
       parsed.value.note,
       new Date().toISOString(),
-    );
+    ],
+  );
   return {
     ok: true as const,
     hire: {

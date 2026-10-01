@@ -2,7 +2,7 @@ import { createHash, randomInt, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { createMemberWithHash } from "@/lib/auth";
 import { normaliseEmail } from "@/lib/account-validation";
-import { getDb } from "@/lib/db";
+import { databaseUrl, dbOne } from "@/lib/db";
 import { sendVerificationCode } from "@/lib/mail";
 import { hashPassword } from "@/lib/passwords";
 
@@ -38,36 +38,26 @@ function makeCode() {
 }
 
 function readPending(email: string) {
-  return getDb()
-    .prepare(
-      `SELECT email, name, password_hash, code_hash, expires_at, attempts, sent_at
-       FROM pending_signups WHERE email = ?`,
-    )
-    .get(email) as PendingRow | undefined;
+  return dbOne<PendingRow>(
+    `SELECT email, name, password_hash, code_hash, expires_at, attempts, sent_at
+     FROM pending_signups WHERE email = $1`,
+    [email],
+  );
 }
 
-function savePending(row: Omit<PendingRow, "attempts"> & { attempts?: number }) {
-  getDb()
-    .prepare(
-      `INSERT INTO pending_signups (email, name, password_hash, code_hash, expires_at, attempts, sent_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?)
-       ON CONFLICT(email) DO UPDATE SET
-         name = excluded.name,
-         password_hash = excluded.password_hash,
-         code_hash = excluded.code_hash,
-         expires_at = excluded.expires_at,
-         attempts = excluded.attempts,
-         sent_at = excluded.sent_at`,
-    )
-    .run(
-      row.email,
-      row.name,
-      row.password_hash,
-      row.code_hash,
-      row.expires_at,
-      row.attempts ?? 0,
-      row.sent_at,
-    );
+async function savePending(row: Omit<PendingRow, "attempts"> & { attempts?: number }) {
+  await dbOne(
+    `INSERT INTO pending_signups (email, name, password_hash, code_hash, expires_at, attempts, sent_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     ON CONFLICT (email) DO UPDATE SET
+       name = EXCLUDED.name,
+       password_hash = EXCLUDED.password_hash,
+       code_hash = EXCLUDED.code_hash,
+       expires_at = EXCLUDED.expires_at,
+       attempts = EXCLUDED.attempts,
+       sent_at = EXCLUDED.sent_at`,
+    [row.email, row.name, row.password_hash, row.code_hash, row.expires_at, row.attempts ?? 0, row.sent_at],
+  );
 }
 
 async function rememberEmail(email: string) {
@@ -84,25 +74,27 @@ export async function pendingSignupEmail() {
   const value = (await cookies()).get(cookieName)?.value;
   if (!value) return null;
   const email = normaliseEmail(value);
-  return readPending(email) ? email : null;
+  return (await readPending(email)) ? email : null;
 }
 
 export async function beginEmailVerification(input: { name: string; email: string; password: string }) {
+  if (!databaseUrl()) {
+    return { ok: false as const, error: "Accounts are not available just now." };
+  }
   const email = normaliseEmail(input.email);
-  const db = getDb();
   const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  db.prepare("DELETE FROM pending_signups WHERE sent_at <= ?").run(dayAgo);
+  await dbOne("DELETE FROM pending_signups WHERE sent_at <= $1", [dayAgo]);
 
-  const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(email) as { id: string } | undefined;
+  const existing = await dbOne<{ id: string }>("SELECT id FROM users WHERE email = $1", [email]);
   if (existing) {
     return { ok: false as const, error: "An account with that email already exists." };
   }
 
   const passwordHash = await hashPassword(input.password);
-  const current = readPending(email);
+  const current = await readPending(email);
   const sentRecently = current !== undefined && Date.now() - Date.parse(current.sent_at) < resendWaitMs;
   if (current && sentRecently) {
-    savePending({ ...current, name: input.name, password_hash: passwordHash });
+    await savePending({ ...current, name: input.name, password_hash: passwordHash });
     await rememberEmail(email);
     return { ok: true as const };
   }
@@ -118,11 +110,11 @@ export async function beginEmailVerification(input: { name: string; email: strin
     attempts: 0,
     sent_at: now.toISOString(),
   };
-  savePending(next);
+  await savePending(next);
   const sent = await sendVerificationCode(email, code);
   if (!sent.ok) {
-    if (current) savePending(current);
-    else db.prepare("DELETE FROM pending_signups WHERE email = ?").run(email);
+    if (current) await savePending(current);
+    else await dbOne("DELETE FROM pending_signups WHERE email = $1", [email]);
     return sent;
   }
 
@@ -133,7 +125,7 @@ export async function beginEmailVerification(input: { name: string; email: strin
 export async function resendVerificationCode() {
   const email = await pendingSignupEmail();
   if (!email) return { ok: false as const, error: "Start again from create an account." };
-  const current = readPending(email);
+  const current = await readPending(email);
   if (!current) return { ok: false as const, error: "Start again from create an account." };
   if (Date.now() - Date.parse(current.sent_at) < resendWaitMs) {
     return { ok: false as const, error: "Please wait a minute before sending another code." };
@@ -141,7 +133,7 @@ export async function resendVerificationCode() {
 
   const code = makeCode();
   const now = new Date();
-  savePending({
+  await savePending({
     ...current,
     code_hash: hashCode(code),
     expires_at: new Date(now.getTime() + codeMinutes * 60 * 1000).toISOString(),
@@ -150,7 +142,7 @@ export async function resendVerificationCode() {
   });
   const sent = await sendVerificationCode(email, code);
   if (!sent.ok) {
-    savePending(current);
+    await savePending(current);
     return sent;
   }
   return { ok: true as const };
@@ -164,7 +156,7 @@ export async function confirmVerificationCode(rawCode: string) {
 
   const email = await pendingSignupEmail();
   if (!email) return { ok: false as const, error: "Start again from create an account." };
-  const current = readPending(email);
+  const current = await readPending(email);
   if (!current) return { ok: false as const, error: "Start again from create an account." };
   if (Date.parse(current.expires_at) <= Date.now()) {
     return { ok: false as const, error: "That code has expired. Send a new code." };
@@ -173,7 +165,7 @@ export async function confirmVerificationCode(rawCode: string) {
     return { ok: false as const, error: "Too many attempts. Send a new code." };
   }
   if (!codesMatch(digits, current.code_hash)) {
-    getDb().prepare("UPDATE pending_signups SET attempts = attempts + 1 WHERE email = ?").run(email);
+    await dbOne("UPDATE pending_signups SET attempts = attempts + 1 WHERE email = $1", [email]);
     return { ok: false as const, error: "That code is not correct." };
   }
 
@@ -184,7 +176,7 @@ export async function confirmVerificationCode(rawCode: string) {
   });
   if (!created.ok) return created;
 
-  getDb().prepare("DELETE FROM pending_signups WHERE email = ?").run(email);
+  await dbOne("DELETE FROM pending_signups WHERE email = $1", [email]);
   (await cookies()).delete(cookieName);
   return { ok: true as const };
 }

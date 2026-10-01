@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { cookies } from "next/headers";
-import { getDb } from "@/lib/db";
+import { dbOne } from "@/lib/db";
 import { planById, site, type PlanId } from "@/lib/site";
 
 const planCookie = "mda_plan";
@@ -75,23 +75,22 @@ async function priceIdFor(planId: PlanId) {
   return created.id;
 }
 
-export function saveMembership(input: {
+export async function saveMembership(input: {
   userId: string;
   customerId: string | null;
   subscriptionId: string | null;
   planId: string | null;
   status: string;
 }) {
-  getDb()
-    .prepare(
-      `UPDATE users
-       SET stripe_customer_id = COALESCE(?, stripe_customer_id),
-           stripe_subscription_id = ?,
-           plan = ?,
-           subscription_status = ?
-       WHERE id = ?`,
-    )
-    .run(input.customerId, input.subscriptionId, input.planId, input.status, input.userId);
+  await dbOne(
+    `UPDATE users
+     SET stripe_customer_id = COALESCE($1, stripe_customer_id),
+         stripe_subscription_id = $2,
+         plan = $3,
+         subscription_status = $4
+     WHERE id = $5`,
+    [input.customerId, input.subscriptionId, input.planId, input.status, input.userId],
+  );
 }
 
 function planFromSubscription(subscription: Stripe.Subscription) {
@@ -139,7 +138,7 @@ export async function fulfillCheckoutSession(sessionId: string, expectedUserId?:
   const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id;
   if (!subscriptionId || !customerId) return;
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  saveMembership({
+  await saveMembership({
     userId,
     customerId,
     subscriptionId,
@@ -152,7 +151,7 @@ export async function applySubscription(subscription: Stripe.Subscription) {
   const userId = subscription.metadata.userId;
   if (!userId) return;
   const customerId = typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
-  saveMembership({
+  await saveMembership({
     userId,
     customerId,
     subscriptionId: subscription.id,

@@ -42,7 +42,7 @@ export async function requestHire(state: BookingState, formData: FormData): Prom
     destination: String(formData.get("destination") ?? ""),
     note: String(formData.get("note") ?? ""),
   };
-  const result = createHireRequest(member, values);
+  const result = await createHireRequest(member, values);
   if (!result.ok) return { error: result.error, values, attempt: state.attempt + 1 };
 
   let mailed = false;
