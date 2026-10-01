@@ -1,4 +1,8 @@
-const rawUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const rawUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
 
 export const site = {
   name: "My Driver Aberdeen",
@@ -16,6 +20,14 @@ export const site = {
   country: "GB",
   serviceArea: "Aberdeen and a 10-mile service area",
 } as const;
+
+export function originFrom(headerList: { get(name: string): string | null }) {
+  const host = (headerList.get("x-forwarded-host") ?? headerList.get("host") ?? "").split(",")[0].trim();
+  if (!host) return site.url;
+  const forwarded = headerList.get("x-forwarded-proto")?.split(",")[0].trim();
+  const proto = forwarded || (host.startsWith("localhost") || host.startsWith("127.0.0.1") ? "http" : "https");
+  return `${proto}://${host}`;
+}
 
 export const standards = [
   {

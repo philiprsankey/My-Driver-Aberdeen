@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { cookies } from "next/headers";
 import { dbOne } from "@/lib/db";
-import { planById, site, type PlanId } from "@/lib/site";
+import { planById, type PlanId } from "@/lib/site";
 
 const planCookie = "mda_plan";
 const globalForStripe = globalThis as unknown as { stripe?: Stripe };
@@ -103,6 +103,7 @@ export async function startCheckout(input: {
   email: string;
   customerId: string | null;
   planId: PlanId;
+  origin: string;
 }) {
   const stripe = getStripe();
   if (!stripe) throw new Error("Missing STRIPE_SECRET_KEY");
@@ -114,8 +115,8 @@ export async function startCheckout(input: {
     customer_email: input.customerId ? undefined : input.email,
     client_reference_id: input.userId,
     line_items: [{ price, quantity: 1 }],
-    success_url: `${site.url}/account?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${site.url}/#membership`,
+    success_url: `${input.origin}/account?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${input.origin}/#membership`,
     metadata: { userId: input.userId, planId: input.planId },
     subscription_data: {
       metadata: { userId: input.userId, planId: input.planId },
@@ -160,12 +161,12 @@ export async function applySubscription(subscription: Stripe.Subscription) {
   });
 }
 
-export async function openCustomerPortal(customerId: string) {
+export async function openCustomerPortal(customerId: string, origin: string) {
   const stripe = getStripe();
   if (!stripe) throw new Error("Missing STRIPE_SECRET_KEY");
   const session = await stripe.billingPortal.sessions.create({
     customer: customerId,
-    return_url: `${site.url}/account`,
+    return_url: `${origin}/account`,
   });
   if (!session.url.startsWith("https://billing.stripe.com/")) {
     throw new Error("Stripe did not return a billing page");

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentMember } from "@/lib/auth";
+import { originFrom } from "@/lib/site";
 import {
   clearPlanChoice,
   getStripe,
@@ -9,7 +10,7 @@ import {
   startCheckout,
 } from "@/lib/billing";
 
-export async function GET(_request: Request, context: { params: Promise<{ plan: string }> }) {
+export async function GET(request: Request, context: { params: Promise<{ plan: string }> }) {
   const { plan: planId } = await context.params;
   if (!isPlanId(planId)) redirect("/#membership");
 
@@ -37,6 +38,7 @@ export async function GET(_request: Request, context: { params: Promise<{ plan: 
       email: member.email,
       customerId: member.stripeCustomerId,
       planId,
+      origin: originFrom(request.headers),
     });
   } catch (error) {
     console.error("Stripe checkout failed", error instanceof Error ? error.message : "");

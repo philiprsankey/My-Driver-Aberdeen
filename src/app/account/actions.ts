@@ -1,7 +1,9 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { endSession, getCurrentMember } from "@/lib/auth";
+import { originFrom } from "@/lib/site";
 import { getStripe, openCustomerPortal } from "@/lib/billing";
 import { createHireRequest } from "@/lib/bookings";
 import { sendHireRequestEmails } from "@/lib/mail";
@@ -23,7 +25,7 @@ export async function manageMembership() {
 
   let url = "";
   try {
-    url = await openCustomerPortal(member.stripeCustomerId);
+    url = await openCustomerPortal(member.stripeCustomerId, originFrom(await headers()));
   } catch (error) {
     console.error("Stripe billing portal failed", error instanceof Error ? error.message : "");
     redirect("/account?billing=failed");
