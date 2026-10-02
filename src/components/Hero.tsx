@@ -5,7 +5,7 @@ export function Hero() {
   return (
     <section className="relative isolate min-h-[42rem] overflow-hidden border-b border-line" aria-labelledby="hero-heading">
       <Image
-        src="/brand/main.jpg"
+        src="/brand/main.png"
         alt="A black Audi and a black Range Rover outside Aberdeen International Airport at sunset."
         fill
         priority
