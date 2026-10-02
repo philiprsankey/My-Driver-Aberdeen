@@ -54,6 +54,15 @@ export function PhoneIcon(props: IconProps) {
   );
 }
 
+export function MailIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="3" y="5" width="18" height="14" />
+      <path d="m4 7 8 6 8-6" />
+    </Svg>
+  );
+}
+
 export function PinIcon(props: IconProps) {
   return (
     <Svg {...props}>

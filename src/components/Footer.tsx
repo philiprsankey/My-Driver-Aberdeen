@@ -1,3 +1,4 @@
+import { MailIcon, PhoneIcon } from "@/components/icons";
 import { site, smsHref, telHref } from "@/lib/site";
 
 const footerLinks = [
@@ -18,16 +19,18 @@ export function Footer() {
           </p>
           <a
             href={telHref()}
-            className="font-display text-4xl tracking-wide text-gold sm:text-5xl"
+            className="inline-flex items-center gap-3 font-display text-4xl tracking-wide text-gold sm:text-5xl"
           >
-            {site.phoneDisplay}
+            <PhoneIcon className="h-8 w-8 shrink-0 sm:h-9 sm:w-9" />
+            <span className="whitespace-nowrap">{site.phoneDisplay}</span>
           </a>
           <p className="md:text-right">
             <a
               href={`mailto:${site.email}`}
-              className="text-sm tracking-wide text-gold transition hover:text-gold-bright md:text-base"
+              className="inline-flex items-center gap-3 text-sm tracking-wide text-gold transition hover:text-gold-bright md:text-base"
             >
-              {site.email}
+              <MailIcon className="h-5 w-5 shrink-0" />
+              <span>{site.email}</span>
             </a>
           </p>
         </div>
