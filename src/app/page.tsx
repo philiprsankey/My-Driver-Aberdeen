@@ -3,6 +3,7 @@ import { Footer, JoinBar } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
 import { Journeys } from "@/components/Journeys";
 import { Membership } from "@/components/Membership";
+import { Prices } from "@/components/Prices";
 import { Service } from "@/components/Service";
 import { structuredData } from "@/lib/schema";
 
@@ -17,6 +18,7 @@ export default function Home() {
       />
       <main id="top">
         <Hero />
+        <Prices />
         <Service />
         <Journeys />
         <Membership />

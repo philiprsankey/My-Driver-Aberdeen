@@ -21,15 +21,14 @@ export function Service() {
             Private car hire in Aberdeen
           </h2>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
-            My Driver Aberdeen is a private members&apos; car service for people
-            who want a luxury car and a professional driver in the city.
-            Membership covers up to five hires a month inside Aberdeen and a
-            10-mile service area.
+            My Driver Aberdeen is a private car service for Aberdeen. Book a
+            one-off journey by phone or text, or take a membership if you travel
+            often.
           </p>
           <p className="mt-4 max-w-xl leading-relaxed text-muted">
             Use it for business, Aberdeen Airport, dinners, events, and everyday
-            travel. Places are limited, and every hire is arranged directly by
-            phone or text.
+            travel. A membership includes up to five hires a month inside Aberdeen
+            and a 10-mile service area.
           </p>
         </div>
 

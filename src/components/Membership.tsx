@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { CheckIcon } from "@/components/icons";
 import { plans, smsHref, telHref } from "@/lib/site";
 
@@ -9,18 +10,37 @@ export function Membership() {
       aria-labelledby="membership-heading"
     >
       <div className="mx-auto max-w-6xl px-5 py-16 lg:py-24">
-        <p className="text-xs tracking-[0.28em] text-gold uppercase">Membership</p>
-        <h2
-          id="membership-heading"
-          className="mt-3 max-w-3xl text-balance font-display text-4xl leading-[0.95] tracking-[-0.02em] text-ivory uppercase sm:text-5xl lg:text-6xl"
-        >
-          Two ways to be driven
-        </h2>
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
-          Both memberships include up to five hires a month within Aberdeen and
-          the 10-mile service area. Further hires are charged at member rates.
-          Exclusive places are available.
-        </p>
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
+          <figure className="min-w-0">
+            <div className="relative bg-gold p-px">
+              <div className="relative aspect-[1672/941] bg-black">
+                <Image
+                  src="/brand/hero.jpg"
+                  alt="Two professional drivers with a dark Audi and a black Range Rover outside Marischal College in Aberdeen."
+                  fill
+                  sizes="(min-width: 1024px) 42vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+            <figcaption className="mt-3 text-xs tracking-[0.18em] text-muted uppercase">
+              Marischal College, Aberdeen
+            </figcaption>
+          </figure>
+          <div className="min-w-0">
+            <p className="text-xs tracking-[0.28em] text-gold uppercase">Membership</p>
+            <h2
+              id="membership-heading"
+              className="mt-3 max-w-3xl text-balance font-display text-4xl leading-[0.95] tracking-[-0.02em] text-ivory uppercase sm:text-5xl lg:text-6xl"
+            >
+              The privilege of regular travel
+            </h2>
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
+              Both memberships include up to five hires a month within Aberdeen and
+              the 10-mile service area. Further hires are charged at member rates.
+            </p>
+          </div>
+        </div>
 
         <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2">
           {plans.map((plan) => (

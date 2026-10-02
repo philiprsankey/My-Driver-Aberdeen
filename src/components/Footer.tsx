@@ -14,7 +14,7 @@ export function Footer() {
       <div className="border-b border-line">
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-4 px-5 py-8 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center">
           <p className="text-xs tracking-[0.22em] text-ivory uppercase">
-            Become a member today
+            Call or text to book
           </p>
           <a
             href={telHref()}
@@ -65,7 +65,7 @@ export function JoinBar() {
         href={smsHref()}
         className="inline-flex min-h-14 items-center justify-center bg-gold text-sm font-medium tracking-[0.16em] text-black uppercase"
       >
-        Text to join
+        Text to book
       </a>
     </div>
   );

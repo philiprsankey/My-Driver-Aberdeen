@@ -3,9 +3,19 @@ import { site, smsHref, telHref } from "@/lib/site";
 
 export function Hero() {
   return (
-    <section className="overflow-x-hidden border-b border-line" aria-labelledby="hero-heading">
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-10 px-5 py-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 lg:py-16">
-        <div className="min-w-0">
+    <section className="relative isolate min-h-[42rem] overflow-hidden border-b border-line" aria-labelledby="hero-heading">
+      <Image
+        src="/brand/main.jpg"
+        alt="A black Audi and a black Range Rover outside Aberdeen International Airport at sunset."
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-[center_45%]"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/65 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/25" />
+      <div className="relative mx-auto flex min-h-[42rem] w-full max-w-6xl items-end px-5 py-16 sm:items-center">
+        <div className="min-w-0 max-w-xl">
           <p className="max-w-full font-script text-[2.05rem] leading-tight text-gold sm:text-5xl">
             Aberdeen in a different class
           </p>
@@ -17,16 +27,8 @@ export function Hero() {
             <span className="block">Your driver.</span>
             <span className="block text-gold">Your time.</span>
           </h1>
-          <p className="mt-6 max-w-[19rem] text-lg leading-relaxed text-balance text-muted sm:max-w-md">
-            A premium, private car service for Aberdeen. Travel in style, with
-            professional, reliable drivers.
-          </p>
-          <p className="mt-5 max-w-full text-xs tracking-[0.16em] text-gold uppercase sm:tracking-[0.22em]">
-            Limited membership
-            <span className="mt-1 block sm:mt-0 sm:inline">
-              <span className="hidden sm:inline"> · </span>
-              Exclusive places available
-            </span>
+          <p className="mt-6 max-w-[19rem] text-lg leading-relaxed text-balance text-ivory sm:max-w-md">
+            A private car for a one-off journey, or a membership if you travel often.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <a
@@ -37,30 +39,12 @@ export function Hero() {
             </a>
             <a
               href={smsHref()}
-              className="inline-flex min-h-12 items-center justify-center border border-line px-6 text-sm font-medium uppercase tracking-[0.16em] text-ivory transition hover:border-gold hover:text-gold-bright"
+              className="inline-flex min-h-12 items-center justify-center border border-ivory/40 px-6 text-sm font-medium uppercase tracking-[0.16em] text-ivory transition hover:border-gold hover:text-gold-bright"
             >
-              Text to join
+              Text to book
             </a>
           </div>
         </div>
-
-        <figure className="min-w-0">
-          <div className="relative bg-gold p-px">
-            <div className="relative aspect-[1672/941] bg-black">
-              <Image
-                src="/brand/hero.jpg"
-                alt="Two professional drivers with a dark Audi and a black Range Rover outside Marischal College in Aberdeen."
-                fill
-                priority
-                sizes="(min-width: 1024px) 46vw, 100vw"
-                className="object-cover"
-              />
-            </div>
-          </div>
-          <figcaption className="mt-3 text-xs tracking-[0.18em] text-muted uppercase">
-            Marischal College, Aberdeen
-          </figcaption>
-        </figure>
       </div>
     </section>
   );

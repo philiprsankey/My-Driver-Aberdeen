@@ -9,7 +9,7 @@ export const site = {
   tagline: "Private members' car service",
   slogan: "Your city. Your driver. Your time.",
   description:
-    "Members-only private car hire in Aberdeen. Luxury vehicles, professional drivers, airport transfers and events. Membership from £100 a month. Call or text 07822 011848.",
+    "Private car hire in Aberdeen. One-off journeys at fixed prices from Aberdeen, and membership from £100 a month. Call or text 07822 011848.",
   url: rawUrl.replace(/\/$/, ""),
   phoneDisplay: "07822 011848",
   phoneTel: "+447822011848",
@@ -32,7 +32,7 @@ export function originFrom(headerList: { get(name: string): string | null }) {
 export const standards = [
   {
     title: "Luxury vehicles",
-    text: "Executive cars for members, in the city and just beyond it.",
+    text: "Executive cars for the city, and for longer journeys from Aberdeen.",
   },
   {
     title: "Professional drivers",
@@ -44,7 +44,7 @@ export const standards = [
   },
   {
     title: "Phone or text",
-    text: "Join and book by a call or a message. No app required.",
+    text: "Book a journey, or join, by a call or a message. No app required.",
   },
 ] as const;
 
@@ -101,6 +101,18 @@ export const plans = [
   },
 ] as const;
 
+export const fares = [
+  { place: "Aberdeen Airport", price: 20 },
+  { place: "Banchory", price: 40 },
+  { place: "Turriff", price: 60 },
+  { place: "Peterhead", price: 60 },
+  { place: "Fraserburgh", price: 80 },
+  { place: "Edinburgh", price: 200 },
+  { place: "Edinburgh Airport", price: 210 },
+  { place: "Glasgow", price: 220 },
+  { place: "Glasgow Airport", price: 230 },
+] as const;
+
 export type PlanId = (typeof plans)[number]["id"];
 
 export function planById(id: string) {
@@ -111,12 +123,12 @@ export const questions = [
   {
     question: "Where does My Driver Aberdeen operate?",
     answer:
-      "Membership covers journeys within Aberdeen and a 10-mile service area. That includes local trips, business travel, and Aberdeen Airport transfers.",
+      "One-off prices on this page are fixed fares from Aberdeen. Membership covers journeys within Aberdeen and a 10-mile service area.",
   },
   {
     question: "How does membership work?",
     answer:
-      "There are two monthly memberships. Each includes up to five hires a month. Hires beyond that are available at member rates. Places are limited.",
+      "Membership is the privilege for regular travel. There are two monthly plans. Each includes up to five hires a month. Hires beyond that are available at member rates.",
   },
   {
     question: "What is the difference between Member and Priority Member?",
@@ -126,7 +138,7 @@ export const questions = [
   {
     question: "How do I join or book a car?",
     answer:
-      "Join on this site, or call or text 07822 011848. Members request a hire from their account, with the date, time, and where they need to be. We email a copy of the request and confirm by phone or text.",
+      "For a one-off journey, call or text 07822 011848. To become a member, join on this site, or call or text. Members request a hire from their account, with the date, time, and where they need to be. We email a copy of the request and confirm by phone or text.",
   },
   {
     question: "What journeys can I book?",
@@ -142,6 +154,6 @@ export function telHref() {
 export function smsHref(planName?: string) {
   const body = planName
     ? `Hello, I would like to join My Driver Aberdeen as a ${planName}.`
-    : "Hello, I would like to join My Driver Aberdeen.";
+    : "Hello, I would like to book a car with My Driver Aberdeen.";
   return `sms:${site.phoneTel}?body=${encodeURIComponent(body)}`;
 }

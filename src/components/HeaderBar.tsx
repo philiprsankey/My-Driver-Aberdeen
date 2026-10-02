@@ -9,6 +9,7 @@ import { site, telHref } from "@/lib/site";
 const links = [
   { href: "/#service", label: "The service" },
   { href: "/#journeys", label: "Journeys" },
+  { href: "/#prices", label: "Prices" },
   { href: "/#membership", label: "Membership" },
   { href: "/#questions", label: "Questions" },
 ];
