@@ -1,5 +1,5 @@
 import { MailIcon, PhoneIcon } from "@/components/icons";
-import { site, smsHref, telHref } from "@/lib/site";
+import { site, telHref } from "@/lib/site";
 
 const footerLinks = [
   "Business",
@@ -21,7 +21,7 @@ export function Footer() {
             href={telHref()}
             className="inline-flex items-center gap-3 font-display text-4xl tracking-wide text-gold sm:text-5xl"
           >
-            <PhoneIcon className="h-8 w-8 shrink-0 sm:h-9 sm:w-9" />
+            <PhoneIcon className="h-8 w-8 shrink-0 max-md:-ml-[7.8px] md:ml-0 md:h-9 md:w-9" />
             <span className="whitespace-nowrap">{site.phoneDisplay}</span>
           </a>
           <p className="md:text-right">
@@ -52,24 +52,5 @@ export function Footer() {
         </ul>
       </div>
     </footer>
-  );
-}
-
-export function JoinBar() {
-  return (
-    <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 border-t border-line bg-black md:hidden">
-      <a
-        href={telHref()}
-        className="inline-flex min-h-14 items-center justify-center text-sm tracking-[0.16em] text-ivory uppercase"
-      >
-        Call
-      </a>
-      <a
-        href={smsHref()}
-        className="inline-flex min-h-14 items-center justify-center bg-gold text-sm font-medium tracking-[0.16em] text-black uppercase"
-      >
-        Text to book
-      </a>
-    </div>
   );
 }

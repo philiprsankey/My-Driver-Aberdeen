@@ -76,7 +76,7 @@ export function Membership() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-8 flex flex-col gap-3">
+              <div data-section-actions className="mt-8 flex flex-col gap-3">
                 <a
                   href={`/join/${plan.id}`}
                   className="inline-flex min-h-12 items-center justify-center bg-gold px-5 text-sm font-medium tracking-[0.16em] text-black uppercase transition hover:bg-gold-bright"

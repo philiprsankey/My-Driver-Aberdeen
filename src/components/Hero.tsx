@@ -3,7 +3,7 @@ import { site, smsHref, telHref } from "@/lib/site";
 
 export function Hero() {
   return (
-    <section className="relative isolate min-h-[42rem] overflow-hidden border-b border-line" aria-labelledby="hero-heading">
+    <section id="hero" className="relative isolate min-h-[calc(100svh-7rem)] overflow-hidden border-b border-line sm:min-h-[42rem]" aria-labelledby="hero-heading">
       <Image
         src="/brand/main.png"
         alt="A black Audi and a black Range Rover outside Aberdeen International Airport at sunset."
@@ -14,7 +14,7 @@ export function Hero() {
       />
       <div className="absolute inset-0 bg-gradient-to-r from-black via-black/65 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/25" />
-      <div className="relative mx-auto flex min-h-[42rem] w-full max-w-6xl items-end px-5 py-16 sm:items-center">
+      <div className="relative mx-auto flex min-h-[calc(100svh-7rem)] w-full max-w-6xl items-start px-5 pt-32 pb-10 sm:min-h-[42rem] sm:items-center sm:py-16">
         <div className="min-w-0 max-w-xl">
           <p className="max-w-full font-script text-[2.05rem] leading-tight text-gold sm:text-5xl">
             Aberdeen in a different class
@@ -30,7 +30,7 @@ export function Hero() {
           <p className="mt-6 max-w-[19rem] text-lg leading-relaxed text-balance text-ivory sm:max-w-md">
             A private car for a one-off journey, or a membership if you travel often.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div data-section-actions className="mt-8 flex flex-col gap-3 sm:flex-row">
             <a
               href={telHref()}
               className="inline-flex min-h-12 items-center justify-center bg-gold px-6 text-sm font-medium uppercase tracking-[0.16em] text-black transition hover:bg-gold-bright"

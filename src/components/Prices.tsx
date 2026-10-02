@@ -49,7 +49,7 @@ export function Prices() {
             );
           })}
         </ul>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div data-section-actions className="mt-8 flex flex-col gap-3 sm:flex-row">
           <a
             href={telHref()}
             className="inline-flex min-h-12 items-center justify-center bg-gold px-6 text-sm font-medium uppercase tracking-[0.16em] text-black transition hover:bg-gold-bright"

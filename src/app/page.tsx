@@ -1,5 +1,6 @@
 import { Faq } from "@/components/Faq";
-import { Footer, JoinBar } from "@/components/Footer";
+import { Footer } from "@/components/Footer";
+import { JoinBar } from "@/components/JoinBar";
 import { Hero } from "@/components/Hero";
 import { Journeys } from "@/components/Journeys";
 import { Membership } from "@/components/Membership";
