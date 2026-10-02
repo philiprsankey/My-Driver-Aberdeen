@@ -14,7 +14,7 @@ export function Hero() {
       />
       <div className="absolute inset-0 bg-gradient-to-r from-black via-black/65 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/25" />
-      <div className="relative mx-auto flex min-h-[calc(100svh-7rem)] w-full max-w-6xl items-start px-5 pt-32 pb-10 sm:min-h-[42rem] sm:items-center sm:py-16">
+      <div className="relative mx-auto flex min-h-[calc(100svh-7rem)] w-full max-w-6xl items-center px-5 sm:min-h-[42rem] sm:py-16">
         <div className="min-w-0 max-w-xl">
           <p className="max-w-full font-script text-[2.05rem] leading-tight text-gold sm:text-5xl">
             Aberdeen in a different class
