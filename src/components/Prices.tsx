@@ -1,4 +1,25 @@
+import {
+  BuildingIcon,
+  CastleIcon,
+  LighthouseIcon,
+  PlaneIcon,
+  ShipIcon,
+  TowerIcon,
+  TreeIcon,
+} from "@/components/icons";
 import { fares, site, smsHref, telHref } from "@/lib/site";
+
+const fareIcons = {
+  "Aberdeen Airport": PlaneIcon,
+  Banchory: TreeIcon,
+  Turriff: TowerIcon,
+  Peterhead: ShipIcon,
+  Fraserburgh: LighthouseIcon,
+  Edinburgh: CastleIcon,
+  "Edinburgh Airport": PlaneIcon,
+  Glasgow: BuildingIcon,
+  "Glasgow Airport": PlaneIcon,
+} as const;
 
 export function Prices() {
   return (
@@ -15,12 +36,18 @@ export function Prices() {
           Book by a call or a text to {site.phoneDisplay}. A membership is not required.
         </p>
         <ul className="mt-10 grid grid-cols-1 gap-x-16 sm:grid-cols-2">
-          {fares.map((fare) => (
-            <li key={fare.place} className="flex items-baseline justify-between gap-6 border-b border-line py-4">
-              <span className="font-display text-2xl text-ivory">{fare.place}</span>
-              <span className="font-display text-3xl text-gold">£{fare.price}</span>
-            </li>
-          ))}
+          {fares.map((fare) => {
+            const Icon = fareIcons[fare.place];
+            return (
+              <li key={fare.place} className="flex items-center gap-4 border-b border-line py-3">
+                <Icon className="h-6 w-6 shrink-0 text-gold" />
+                <span className="min-w-0 flex-1 font-display text-2xl text-ivory">{fare.place}</span>
+                <span className="inline-flex min-w-24 items-center justify-center bg-gold px-3 py-1.5 font-display text-2xl leading-none text-black">
+                  £{fare.price}
+                </span>
+              </li>
+            );
+          })}
         </ul>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <a

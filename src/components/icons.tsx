@@ -72,6 +72,59 @@ export function BriefcaseIcon(props: IconProps) {
   );
 }
 
+export function TreeIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 3 7.5 10h2L6 17h3.2V21h5.6v-4H18l-3.5-7h2L12 3Z" />
+    </Svg>
+  );
+}
+
+export function TowerIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 2 8.5 8h7L12 2Z" />
+      <path d="M9 8v13M15 8v13M8 21h8M9.5 12h5M9.5 16h5" />
+    </Svg>
+  );
+}
+
+export function ShipIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M3 15h18l-2.2 5H5.2L3 15Z" />
+      <path d="M12 15V4M12 4h6l-2 5" />
+    </Svg>
+  );
+}
+
+export function LighthouseIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M9 21V11l3-5 3 5v10" />
+      <path d="M8 21h8M7.5 8h9M12 2v4" />
+    </Svg>
+  );
+}
+
+export function CastleIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4 21V9h3V5h2v4h2V5h2v4h2V5h2v4h3v12" />
+      <path d="M10 21v-5h4v5" />
+    </Svg>
+  );
+}
+
+export function BuildingIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4 21V8l4-2v15M8 21V4h8v17M16 21V8l4 2v11M4 21h16" />
+      <path d="M10.5 8h3M10.5 12h3M10.5 16h3" />
+    </Svg>
+  );
+}
+
 export function PlaneIcon(props: IconProps) {
   return (
     <Svg {...props}>
