@@ -1,7 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { ensureOwner } from "@/lib/auth";
 import { dbAll, dbOne, dbTransaction } from "@/lib/db";
-import { asHours, validateHours, withinHours, type Hour } from "@/lib/london";
+import { asHours, formatWhen, validateHours, withinHours, type Hour } from "@/lib/london";
+import { sendNotice } from "@/lib/mail";
 import { stripeTestMode } from "@/lib/billing";
 import { FARES, type Journey, type MembershipView, type Notice, type Person, type PortalData, type TimeOff } from "@/lib/journey-types";
 
@@ -160,6 +161,50 @@ async function adminIds() {
   return rows.map((row) => row.id);
 }
 
+async function emailJourneyRequest(input: {
+  memberName: string;
+  memberEmail: string;
+  pickup: string;
+  destination: string;
+  when: string;
+  returnWhen: string;
+  phone: string;
+  notes: string;
+}) {
+  try {
+    const journey = [
+      `Pickup: ${input.pickup}`,
+      `Destination: ${input.destination}`,
+      `When: ${input.when}`,
+      ...(input.returnWhen ? [`Return: ${input.returnWhen}`] : []),
+      `Phone: ${input.phone}`,
+      ...(input.notes ? [`Notes: ${input.notes}`] : []),
+    ];
+    const owners = await dbAll<{ email: string }>("SELECT email FROM account_users WHERE role = 'admin' AND active");
+    const sends = [
+      sendNotice(input.memberEmail, "Your journey request", [
+        "We have your journey request.",
+        ...journey,
+        "It is not a confirmed booking until your driver approves it.",
+      ]),
+      ...owners
+        .map((owner) => owner.email)
+        .filter((email) => email && email.toLowerCase() !== input.memberEmail.toLowerCase())
+        .map((email) => sendNotice(email, "New journey request", [
+          `${input.memberName} has requested a journey.`,
+          ...journey,
+          "It is not confirmed until you approve it in the diary.",
+        ])),
+    ];
+    const results = await Promise.all(sends);
+    for (const result of results) {
+      if (!result.ok) console.error("Journey request email was not sent", result.error);
+    }
+  } catch (error) {
+    console.error("Journey request email was not sent", error);
+  }
+}
+
 export async function loadPortal(userId: string): Promise<PortalData> {
   await ensureOwner();
   const user = await requireUser(userId);
@@ -302,6 +347,16 @@ export async function requestJourney(userId: string, input: {
       ? "Your outward and return requests have been saved. Each one needs driver approval."
       : "Your journey request has been saved and is awaiting driver approval. It is not confirmed yet.",
   );
+  await emailJourneyRequest({
+    memberName: user.name,
+    memberEmail: user.email,
+    pickup,
+    destination,
+    when: formatWhen(start.toISOString()),
+    returnWhen: returnAt ? formatWhen(returnAt.toISOString()) : "",
+    phone: input.phone.trim(),
+    notes: input.notes.trim(),
+  });
   return returnAt
     ? "Two requests have been saved. Neither is confirmed until your driver approves it."
     : "Your request has been saved. It is not confirmed until your driver approves it.";

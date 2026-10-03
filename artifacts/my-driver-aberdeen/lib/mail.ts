@@ -80,3 +80,36 @@ export async function sendVerificationCode(email: string, code: string) {
 
   return { ok: true as const };
 }
+
+export async function sendNotice(email: string, subject: string, paragraphs: string[]) {
+  const key = process.env.RESEND_API_KEY;
+  const to = email.trim();
+  if (!key || !to) return { ok: false as const, error: "Email is not configured yet." };
+  const text = paragraphs.join("\n\n");
+  const html = emailShell(
+    paragraphs
+      .map((paragraph) => `<p style="margin:18px 0 0;font-size:16px;line-height:1.6;color:#172c35">${escapeHtml(paragraph)}</p>`)
+      .join(""),
+  );
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: fromAddress,
+      to: [to],
+      subject,
+      text,
+      html,
+    }),
+  });
+  if (!response.ok) {
+    const detail = await response.json().catch(() => null);
+    const message = detail && typeof detail === "object" && "message" in detail ? detail.message : "";
+    console.error("Resend rejected an email", response.status, message);
+    return { ok: false as const, error: "We could not send the email. Try again in a moment." };
+  }
+  return { ok: true as const };
+}
