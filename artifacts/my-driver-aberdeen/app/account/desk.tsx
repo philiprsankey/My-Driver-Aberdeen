@@ -34,7 +34,7 @@ const STATUS: Record<string, string> = {
   no_show: "No show",
 };
 
-type Tab = "journeys" | "request" | "membership" | "hours" | "alerts" | "profile";
+type Tab = "journeys" | "request" | "membership" | "hours" | "access" | "alerts" | "profile";
 
 export default function AccountDesk({ portal, notice = "" }: { portal: PortalData; notice?: string }) {
   const role = portal.user.role;
@@ -43,6 +43,7 @@ export default function AccountDesk({ portal, notice = "" }: { portal: PortalDat
     { id: "journeys", label: role === "customer" ? "Journeys" : "Diary" },
     ...(role === "customer" ? [{ id: "request" as const, label: "Request" }, { id: "membership" as const, label: "Membership" }] : []),
     ...(role === "admin" || role === "driver" ? [{ id: "hours" as const, label: "Hours" }] : []),
+    ...(role === "admin" ? [{ id: "access" as const, label: "Access" }] : []),
     { id: "alerts", label: unread ? `Alerts ${unread}` : "Alerts" },
     { id: "profile", label: "Profile" },
   ];
@@ -79,6 +80,7 @@ export default function AccountDesk({ portal, notice = "" }: { portal: PortalDat
           {active === "request" && <RequestForm portal={portal} onDone={() => setTab("journeys")} />}
           {active === "membership" && <MembershipPanel portal={portal} />}
           {active === "hours" && <HoursPanel portal={portal} />}
+          {active === "access" && <AccessPanel portal={portal} />}
           {active === "alerts" && <Alerts notices={portal.notices} />}
           {active === "profile" && <Profile user={portal.user} />}
         </div>
@@ -344,17 +346,15 @@ function HoursPanel({ portal }: { portal: PortalData }) {
           <button className={scope === "company" ? "on" : ""} onClick={() => setScope("company")}>Company</button>
           <button className={scope === "priority" ? "on" : ""} onClick={() => setScope("priority")}>Priority</button>
           <button className={scope === "driver" ? "on" : ""} onClick={() => setScope("driver")}>A driver</button>
-          <button className={scope === "people" ? "on" : ""} onClick={() => setScope("people")}>Access</button>
           <button className={scope === "off" ? "on" : ""} onClick={() => setScope("off")}>Time off</button>
         </div>
       )}
       {scope === "company" && portal.user.role === "admin" && <HoursForm scope="company" hours={portal.settings.workingHours} notice={portal.settings.minimumNoticeHours} hold={portal.settings.paymentHoldMinutes} />}
       {scope === "priority" && portal.user.role === "admin" && <HoursForm scope="priority" hours={portal.settings.priorityHours} />}
-      {(scope === "driver" || portal.user.role === "driver") && scope !== "people" && scope !== "off" && scope !== "company" && scope !== "priority" && (
+      {(scope === "driver" || portal.user.role === "driver") && scope !== "off" && scope !== "company" && scope !== "priority" && (
         <DriverHours portal={portal} />
       )}
       {portal.user.role === "driver" && <TimeOffForm portal={portal} />}
-      {scope === "people" && <People portal={portal} />}
       {scope === "off" && <TimeOffForm portal={portal} />}
     </section>
   );
@@ -458,6 +458,16 @@ function HourRows({ rows, onChange }: { rows: Hour[]; onChange: (rows: Hour[]) =
       ))}
       <button type="button" className="mini mini-add" onClick={() => onChange([...rows, { day: 1, start: "08:00", end: "18:00" }])}>Add a period</button>
     </div>
+  );
+}
+
+function AccessPanel({ portal }: { portal: PortalData }) {
+  return (
+    <section className="panel">
+      <div className="panel-head"><div><p className="section-kicker">Accounts</p><h2>Access</h2></div></div>
+      <p className="note">Choose Driver only for someone you employ to drive. Customers stay as passengers.</p>
+      <People portal={portal} />
+    </section>
   );
 }
 
