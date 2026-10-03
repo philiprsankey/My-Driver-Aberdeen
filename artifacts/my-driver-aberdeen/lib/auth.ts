@@ -25,6 +25,12 @@ function expiresAt() {
   return new Date(Date.now() + sessionDays * 24 * 60 * 60 * 1000);
 }
 
+const ownerEmails = ["philiprobb@icloud.com"];
+
+function isOwnerEmail(email: string) {
+  return ownerEmails.includes(normaliseEmail(email));
+}
+
 export async function ensureOwner() {
   await dbOne(
     `UPDATE account_users SET role = 'admin'
@@ -34,6 +40,11 @@ export async function ensureOwner() {
        ORDER BY created_at ASC
        LIMIT 1
      )`,
+  );
+  await dbOne(
+    `UPDATE account_users SET role = 'admin', active = TRUE
+     WHERE lower(email) = ANY($1::text[])`,
+    [ownerEmails],
   );
 }
 
@@ -45,11 +56,12 @@ export async function createAccountWithHash(input: {
   const id = randomUUID();
   try {
     await ensureOwner();
+    const email = normaliseEmail(input.email);
     const admin = await dbOne("SELECT id FROM account_users WHERE role = 'admin' LIMIT 1");
     await dbOne(
       `INSERT INTO account_users (id, name, email, password_hash, role)
        VALUES ($1, $2, $3, $4, $5)`,
-      [id, input.name, normaliseEmail(input.email), input.passwordHash, admin ? "customer" : "admin"],
+      [id, input.name, email, input.passwordHash, isOwnerEmail(email) || !admin ? "admin" : "customer"],
     );
   } catch (error) {
     if (isUniqueViolation(error)) {
