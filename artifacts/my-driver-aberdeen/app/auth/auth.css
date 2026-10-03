@@ -1,0 +1,157 @@
+.auth-screen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 32px 16px 48px;
+  background: #10232b;
+  color: #fbf9f4;
+}
+
+.auth-back {
+  color: #d7b77e;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.auth-card {
+  width: min(410px, 100%);
+  box-sizing: border-box;
+  padding: 48px 36px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #172c35;
+  text-align: center;
+}
+
+.auth-card h1 {
+  margin: 0;
+  font: 500 28px/1.25 var(--serif);
+  color: #fbf9f4;
+}
+
+.auth-sub {
+  margin: 8px 0 28px;
+  color: #c7d0cf;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.auth-card form {
+  display: grid;
+  gap: 16px;
+  text-align: left;
+}
+
+.auth-card .field label {
+  color: #d7b77e;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.auth-card .field input {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: #10232b;
+  color: #fbf9f4;
+}
+
+.auth-card .field input::placeholder {
+  color: #8b9898;
+}
+
+.auth-card .field input:focus {
+  border-color: #d7b77e;
+  background: #10232b;
+}
+
+.pass-wrap {
+  position: relative;
+}
+
+.pass-wrap input {
+  width: 100%;
+  padding-right: 44px;
+}
+
+.eye {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #c7d0cf;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.auth-error,
+.auth-ok {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.auth-error { color: #f0a99a; }
+.auth-ok { color: #a9d6bd; }
+
+.auth-submit {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 4px;
+  border: 0;
+  background: #d7b77e;
+  color: #10232b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.auth-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.auth-switch {
+  margin: 6px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  color: #c7d0cf;
+  font-size: 14px;
+  text-align: center;
+}
+
+.auth-switch a,
+.auth-text-btn {
+  color: #d7b77e;
+  font-weight: 600;
+}
+
+.auth-text-btn {
+  justify-self: center;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.auth-talk {
+  margin: 0;
+  color: #c7d0cf;
+  font-size: 13px;
+}
+
+.auth-talk a {
+  color: #fbf9f4;
+}

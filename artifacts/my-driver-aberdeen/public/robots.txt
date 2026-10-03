@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.mydriver-aberdeen.co.uk/sitemap.xml
