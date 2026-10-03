@@ -30,6 +30,7 @@
 .panel .section-kicker { margin-bottom: 10px; }
 .sub { font: 500 20px var(--serif); margin: 26px 0 12px; }
 .note { color: var(--muted); font-size: 12.5px; line-height: 1.7; margin: 0 0 18px; max-width: 760px; }
+.field-hint { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.55; }
 .summary { font: 500 18px var(--serif); color: var(--ink); margin: 0; }
 .stack { display: grid; gap: 14px; }
 .form-grid, .inline-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 16px; }

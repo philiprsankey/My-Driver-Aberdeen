@@ -339,7 +339,6 @@ function HoursPanel({ portal }: { portal: PortalData }) {
   return (
     <section className="panel">
       <div className="panel-head"><div><p className="section-kicker">Working week</p><h2>Hours</h2></div></div>
-      <p className="note">A journey and its travel buffer must sit inside these hours. A driver with no personal hours follows the company week. Priority hours are added for a Priority member.</p>
       {portal.user.role === "admin" && (
         <div className="seg" style={{ marginBottom: 18 }}>
           <button className={scope === "company" ? "on" : ""} onClick={() => setScope("company")}>Company</button>
@@ -380,12 +379,26 @@ function HoursForm({ scope, hours, notice, hold }: { scope: "company" | "priorit
   }
   return (
     <form action={onSubmit} className="form-grid">
+      {scope === "company" ? (
+        <p className="note wide">These are the hours a journey is allowed to run. Add at least one period, then save. Until that is saved, members cannot send an online request.</p>
+      ) : (
+        <p className="note wide">Optional extra hours for a Priority member using an included hire. They are added to the company week. Leave this empty if Priority members use the same hours as everyone else.</p>
+      )}
       {scope === "company" && (
         <>
-          <div className="field"><label htmlFor="notice">Minimum notice (hours)</label><input id="notice" name="notice" type="number" min={1} max={168} required defaultValue={notice ?? 2} /></div>
-          <div className="field"><label htmlFor="hold">Payment hold (minutes)</label><input id="hold" name="hold" type="number" min={30} max={1440} required defaultValue={hold ?? 60} /></div>
+          <div className="field">
+            <label htmlFor="notice">Minimum notice (hours)</label>
+            <input id="notice" name="notice" type="number" min={1} max={168} required defaultValue={notice ?? 2} />
+            <p className="field-hint">How far ahead a pickup must be. With 2, a request made at 10:00 can be for 12:00 or later.</p>
+          </div>
+          <div className="field">
+            <label htmlFor="hold">Payment hold (minutes)</label>
+            <input id="hold" name="hold" type="number" min={30} max={1440} required defaultValue={hold ?? 60} />
+            <p className="field-hint">After a card fare is approved, this is how long the member has to pay. An included membership hire does not use this timer.</p>
+          </div>
         </>
       )}
+      <p className="note wide">Each row is one day, from a start time to a finish time, in London time. The pickup, the journey, and the travel buffer must sit inside that period.</p>
       <div className="wide"><HourRows rows={rows} onChange={setRows} /></div>
       <div className="wide"><button className="button button-gold sm" disabled={pending}>{pending ? "Saving…" : "Save hours"}</button></div>
       <div className="wide"><Feedback result={result} /></div>
@@ -421,7 +434,8 @@ function DriverHours({ portal }: { portal: PortalData }) {
           </select>
         </div>
       )}
-      <p className="note wide">Leave this blank to follow the company week.</p>
+      <p className="note wide">Personal hours for one driver. Leave this empty and that driver follows the company week.</p>
+      <p className="note wide">Each row is one day, from a start time to a finish time, in London time. The pickup, the journey, and the travel buffer must sit inside that period.</p>
       <div className="wide"><HourRows rows={rows} onChange={setRows} /></div>
       <div className="wide"><button className="button button-gold sm" disabled={pending}>{pending ? "Saving…" : "Save driver hours"}</button></div>
       <div className="wide"><Feedback result={result} /></div>
@@ -486,6 +500,7 @@ function TimeOffForm({ portal }: { portal: PortalData }) {
   return (
     <div className="time-off">
       <h3 className="sub">Time off</h3>
+      <p className="note">Blocks that driver even when the time falls inside the working week.</p>
       <form className="form-grid" action={async (form) => {
         setPending(true);
         const response = await addTimeOffAction({
