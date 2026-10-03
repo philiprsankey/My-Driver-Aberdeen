@@ -499,12 +499,14 @@ function AccessPanel({ portal }: { portal: PortalData }) {
   );
 }
 
-function PersonAccess({ person, onResult }: { person: PortalData["people"][number]; onResult: (result: ActionResult) => void }) {
+function PersonAccess({ person }: { person: PortalData["people"][number] }) {
   const refresh = useRefresh();
   const serverRole = person.role === "driver" ? "driver" : "customer";
   const [role, setRole] = useState<"customer" | "driver">(serverRole);
   const [active, setActive] = useState(person.active);
   const [seen, setSeen] = useState(`${serverRole}:${person.active}`);
+  const [pending, setPending] = useState(false);
+  const [note, setNote] = useState<ActionResult | null>(null);
   const next = `${serverRole}:${person.active}`;
   if (seen !== next) {
     setSeen(next);
@@ -513,35 +515,37 @@ function PersonAccess({ person, onResult }: { person: PortalData["people"][numbe
   }
   return (
     <form className="staff" onSubmit={keepForm(async () => {
+      setPending(true);
+      setNote(null);
       const response = await saveRoleAction(person.id, role, active);
-      onResult(response);
+      setNote(response);
+      setPending(false);
       if (response.ok) refresh();
     })}>
       <div className="staff-top">
         <div><h3>{person.name}</h3><p>{person.email}</p></div>
         <div className="staff-ctl">
-          <select name="role" value={role} aria-label={`Access for ${person.name}`} onChange={(event) => setRole(event.target.value === "driver" ? "driver" : "customer")}>
+          <select name="role" value={role} aria-label={`Access for ${person.name}`} onChange={(event) => { setRole(event.target.value === "driver" ? "driver" : "customer"); setNote(null); }}>
             <option value="customer">Passenger</option>
             <option value="driver">Driver</option>
           </select>
-          <label className="check"><input name="active" type="checkbox" checked={active} onChange={(event) => setActive(event.target.checked)} /> Active</label>
-          <button className="mini">Save</button>
+          <label className="check"><input name="active" type="checkbox" checked={active} onChange={(event) => { setActive(event.target.checked); setNote(null); }} /> Active</label>
+          <button className="mini" type="submit" disabled={pending}>{pending ? "Saving…" : "Save"}</button>
         </div>
       </div>
+      <Feedback result={note} />
     </form>
   );
 }
 
 function People({ portal }: { portal: PortalData }) {
-  const [result, setResult] = useState<ActionResult | null>(null);
   const others = portal.people.filter((person) => person.id !== portal.user.id && person.role !== "admin");
   return (
     <div className="stack">
       {others.length === 0 && <p className="note">No other accounts yet. Someone can sign up, and you can then give them driver access.</p>}
       {others.map((person) => (
-        <PersonAccess key={person.id} person={person} onResult={setResult} />
+        <PersonAccess key={person.id} person={person} />
       ))}
-      <Feedback result={result} />
     </div>
   );
 }
