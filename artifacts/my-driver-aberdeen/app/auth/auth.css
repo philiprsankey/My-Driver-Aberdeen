@@ -94,12 +94,15 @@
   transform: translateY(-50%);
 }
 
+.auth-hint,
 .auth-error,
 .auth-ok {
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
 }
+
+.auth-hint { margin-top: 6px; color: #c7d0cf; }
 
 .auth-error { color: #f0a99a; }
 .auth-ok { color: #a9d6bd; }

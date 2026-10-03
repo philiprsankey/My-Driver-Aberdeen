@@ -18,7 +18,9 @@ export function validateNewAccount(input: {
   if (name.length < 2) return { ok: false, error: "Enter your name." };
   if (name.length > 80) return { ok: false, error: "Name is too long." };
   if (!emailPattern.test(email)) return { ok: false, error: "Enter a valid email address." };
-  if (input.password.length < 8) return { ok: false, error: "Password must be at least 8 characters." };
+  if (input.password.length < 10 || !/[A-Z]/.test(input.password) || !/[a-z]/.test(input.password) || !/\d/.test(input.password)) {
+    return { ok: false, error: "Use at least 10 characters, with one capital letter, one small letter, and one number." };
+  }
   if (input.password !== input.confirm) return { ok: false, error: "Passwords do not match." };
   return { ok: true, value: { name, email, password: input.password } };
 }

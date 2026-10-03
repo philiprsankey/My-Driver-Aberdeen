@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { confirmCodeAction, resendCodeAction, signInAction, signUpAction } from "@/lib/auth-actions";
 
 function EyeIcon() {
@@ -19,6 +19,7 @@ function PasswordField({
   placeholder,
   autoComplete,
   minLength,
+  hint,
 }: {
   id: string;
   name: string;
@@ -26,6 +27,7 @@ function PasswordField({
   placeholder: string;
   autoComplete: string;
   minLength?: number;
+  hint?: string;
 }) {
   const [show, setShow] = useState(false);
   return (
@@ -37,6 +39,7 @@ function PasswordField({
           <EyeIcon />
         </button>
       </div>
+      {hint ? <p className="auth-hint">{hint}</p> : null}
     </div>
   );
 }
@@ -61,10 +64,11 @@ export function SignInForm({ nextPath, email }: { nextPath: string; email: strin
 
   return (
     <form
-      action={async (formData) => {
+      onSubmit={async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         setPending(true);
         setError("");
-        const result = await signInAction(formData);
+        const result = await signInAction(new FormData(event.currentTarget));
         if (result?.error) {
           setError(result.error);
           setPending(false);
@@ -90,10 +94,11 @@ export function SignUpForm() {
 
   return (
     <form
-      action={async (formData) => {
+      onSubmit={async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         setPending(true);
         setError("");
-        const result = await signUpAction(formData);
+        const result = await signUpAction(new FormData(event.currentTarget));
         if (result?.error) {
           setError(result.error);
           setPending(false);
@@ -108,8 +113,8 @@ export function SignUpForm() {
         <label htmlFor="email">Email address</label>
         <input id="email" name="email" type="email" placeholder="Enter your email address" autoComplete="email" required />
       </div>
-      <PasswordField id="password" name="password" label="Password" placeholder="Create a password" autoComplete="new-password" minLength={8} />
-      <PasswordField id="confirm" name="confirm" label="Confirm password" placeholder="Repeat your password" autoComplete="new-password" minLength={8} />
+      <PasswordField id="password" name="password" label="Password" placeholder="Create a password" autoComplete="new-password" hint="At least 10 characters, with one capital letter, one small letter, and one number." />
+      <PasswordField id="confirm" name="confirm" label="Confirm password" placeholder="Repeat your password" autoComplete="new-password" />
       {error ? <p className="auth-error" role="alert">{error}</p> : null}
       <button className="auth-submit" type="submit" disabled={pending}>{pending ? "Sending code" : "Continue"} <span aria-hidden="true">›</span></button>
       <p className="auth-switch">Already have an account? <a href="/sign-in/">Sign in</a></p>
@@ -124,10 +129,11 @@ export function CodeForm({ email }: { email: string }) {
 
   return (
     <form
-      action={async (formData) => {
+      onSubmit={async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         setPending(true);
         setError("");
-        const result = await confirmCodeAction(formData);
+        const result = await confirmCodeAction(new FormData(event.currentTarget));
         if (result?.error) {
           setError(result.error);
           setPending(false);
