@@ -355,18 +355,6 @@ export async function declineJourney(userId: string, id: string, reason: string)
   return message;
 }
 
-export async function assignJourney(userId: string, id: string, driverId: string) {
-  const user = await requireUser(userId);
-  if (user.role !== "admin") throw new JourneyError("Only the owner can assign a driver.");
-  const { row } = await loadOwned(user, id);
-  if (!["requested", "payment_expired"].includes(row.status)) throw new JourneyError("Only an open request can be assigned.");
-  const driver = await dbOne("SELECT id FROM account_users WHERE id = $1 AND role IN ('driver', 'admin') AND active", [driverId]);
-  if (!driver) throw new JourneyError("Choose an active driver.");
-  await dbOne("UPDATE journey_bookings SET driver_id = $2 WHERE id = $1", [id, driverId]);
-  await notify([driverId, row.customer_id], "A journey request has been assigned and is awaiting approval.");
-  return "The request has been assigned.";
-}
-
 export async function approveJourney(userId: string, input: {
   id: string;
   driverId: string;

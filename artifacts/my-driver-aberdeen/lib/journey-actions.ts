@@ -6,7 +6,6 @@ import { londonToIso, type Hour } from "@/lib/london";
 import {
   addTimeOff,
   approveJourney,
-  assignJourney,
   cancelJourney,
   completeJourney,
   declineJourney,
@@ -68,10 +67,6 @@ export async function cancelJourneyAction(id: string) {
 
 export async function declineJourneyAction(id: string, reason: string) {
   return run((userId) => declineJourney(userId, id, reason));
-}
-
-export async function assignJourneyAction(id: string, driverId: string) {
-  return run((userId) => assignJourney(userId, id, driverId));
 }
 
 export async function approveJourneyAction(input: {

@@ -7,7 +7,6 @@ import type { ActionResult } from "@/lib/journey-actions";
 import {
   addTimeOffAction,
   approveJourneyAction,
-  assignJourneyAction,
   cancelJourneyAction,
   completeJourneyAction,
   declineJourneyAction,
@@ -198,13 +197,6 @@ function ApproveForm({ journey, portal }: { journey: Journey; portal: PortalData
     setPending(false);
     if (result.ok) refresh();
   }
-  async function assign(form: FormData) {
-    setPending(true);
-    const result = await assignJourneyAction(journey.id, String(form.get("driverId") ?? ""));
-    setMessage(result);
-    setPending(false);
-    if (result.ok) refresh();
-  }
   return (
     <div className="approve">
       <form onSubmit={keepForm(onSubmit)} className="form-grid">
@@ -227,15 +219,6 @@ function ApproveForm({ journey, portal }: { journey: Journey; portal: PortalData
         <div className="wide"><button className="button button-gold sm" disabled={pending}>{pending ? "Saving…" : "Approve"}</button></div>
       </form>
       <div className="approve-side">
-        {portal.user.role === "admin" && (
-          <form onSubmit={keepForm(assign)} className="inline-row">
-            <select name="driverId" defaultValue={journey.driverId ?? ""} aria-label="Assign a driver">
-              <option value="">Assign a driver</option>
-              {drivers.map((driver) => <option key={driver.id} value={driver.id}>{driver.name}</option>)}
-            </select>
-            <button className="mini" disabled={pending}>Assign</button>
-          </form>
-        )}
         <form onSubmit={keepForm(decline)} className="inline-row">
           <input name="reason" placeholder="Reason, if you wish" maxLength={200} aria-label="Reason for declining" />
           <button className="btn-danger" disabled={pending}>Decline</button>
