@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { signOutAction } from "@/lib/auth-actions";
 import type { ActionResult } from "@/lib/journey-actions";
@@ -35,6 +35,17 @@ const STATUS: Record<string, string> = {
 };
 
 type Tab = "journeys" | "request" | "membership" | "hours" | "access" | "alerts" | "profile";
+
+function keepForm(handler: (form: FormData) => void | Promise<void>) {
+  return (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void handler(new FormData(event.currentTarget));
+  };
+}
+
+function sameHours(left: Hour[], right: Hour[]) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
 
 export default function AccountDesk({ portal, notice = "" }: { portal: PortalData; notice?: string }) {
   const role = portal.user.role;
@@ -196,7 +207,7 @@ function ApproveForm({ journey, portal }: { journey: Journey; portal: PortalData
   }
   return (
     <div className="approve">
-      <form action={onSubmit} className="form-grid">
+      <form onSubmit={keepForm(onSubmit)} className="form-grid">
         {portal.user.role === "admin" && (
           <div className="field"><label htmlFor={`driver-${journey.id}`}>Driver</label>
             <select id={`driver-${journey.id}`} name="driverId" defaultValue={journey.driverId ?? portal.user.id}>
@@ -217,7 +228,7 @@ function ApproveForm({ journey, portal }: { journey: Journey; portal: PortalData
       </form>
       <div className="approve-side">
         {portal.user.role === "admin" && (
-          <form action={assign} className="inline-row">
+          <form onSubmit={keepForm(assign)} className="inline-row">
             <select name="driverId" defaultValue={journey.driverId ?? ""} aria-label="Assign a driver">
               <option value="">Assign a driver</option>
               {drivers.map((driver) => <option key={driver.id} value={driver.id}>{driver.name}</option>)}
@@ -225,7 +236,7 @@ function ApproveForm({ journey, portal }: { journey: Journey; portal: PortalData
             <button className="mini" disabled={pending}>Assign</button>
           </form>
         )}
-        <form action={decline} className="inline-row">
+        <form onSubmit={keepForm(decline)} className="inline-row">
           <input name="reason" placeholder="Reason, if you wish" maxLength={200} aria-label="Reason for declining" />
           <button className="btn-danger" disabled={pending}>Decline</button>
         </form>
@@ -266,7 +277,7 @@ function RequestForm({ portal, onDone }: { portal: PortalData; onDone: () => voi
       <div className="panel-head"><div><p className="section-kicker">Book</p><h2>Request a journey</h2></div></div>
       {!portal.settings.configured && <p className="fb fb-warn">Online requests are closed until working hours are set. Call or text 07822 011848.</p>}
       <p className="note">Enter the pickup in London time. A request is not a confirmed booking. Your driver reviews it first.{portal.settings.minimumNoticeHours ? ` Minimum notice is ${portal.settings.minimumNoticeHours} hours.` : ""}</p>
-      <form action={onSubmit} className="form-grid">
+      <form onSubmit={keepForm(onSubmit)} className="form-grid">
         <div className="field wide"><label>Journey</label>
           <div className="seg"><button type="button" className={trip === "one" ? "on" : ""} onClick={() => setTrip("one")}>One way</button><button type="button" className={trip === "return" ? "on" : ""} onClick={() => setTrip("return")}>Return</button></div>
         </div>
@@ -363,6 +374,11 @@ function HoursPanel({ portal }: { portal: PortalData }) {
 function HoursForm({ scope, hours, notice, hold }: { scope: "company" | "priority"; hours: Hour[]; notice?: number | null; hold?: number }) {
   const refresh = useRefresh();
   const [rows, setRows] = useState<Hour[]>(hours);
+  const [savedHours, setSavedHours] = useState(hours);
+  if (!sameHours(savedHours, hours)) {
+    setSavedHours(hours);
+    setRows(hours);
+  }
   const [result, setResult] = useState<ActionResult | null>(null);
   const [pending, setPending] = useState(false);
   async function onSubmit(form: FormData) {
@@ -378,7 +394,7 @@ function HoursForm({ scope, hours, notice, hold }: { scope: "company" | "priorit
     if (response.ok) refresh();
   }
   return (
-    <form action={onSubmit} className="form-grid">
+    <form onSubmit={keepForm(onSubmit)} className="form-grid">
       {scope === "company" ? (
         <p className="note wide">These are the hours a journey is allowed to run. Add at least one period, then save. Until that is saved, members cannot send an online request.</p>
       ) : (
@@ -411,7 +427,13 @@ function DriverHours({ portal }: { portal: PortalData }) {
   const choices = portal.user.role === "admin" ? portal.drivers : [portal.user];
   const [driverId, setDriverId] = useState(choices[0]?.id ?? "");
   const selected = choices.find((driver) => driver.id === driverId) ?? choices[0];
-  const [rows, setRows] = useState<Hour[]>(selected?.workingHours ?? []);
+  const serverRows = selected?.workingHours ?? [];
+  const [rows, setRows] = useState<Hour[]>(serverRows);
+  const [savedRows, setSavedRows] = useState(serverRows);
+  if (!sameHours(savedRows, serverRows)) {
+    setSavedRows(serverRows);
+    setRows(serverRows);
+  }
   const [result, setResult] = useState<ActionResult | null>(null);
   const [pending, setPending] = useState(false);
   async function onSubmit() {
@@ -422,7 +444,13 @@ function DriverHours({ portal }: { portal: PortalData }) {
     if (response.ok) refresh();
   }
   return (
-    <form action={onSubmit} className="form-grid">
+    <form
+      className="form-grid"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void onSubmit();
+      }}
+    >
       {portal.user.role === "admin" && (
         <div className="field wide"><label htmlFor="who">Driver</label>
           <select id="who" value={driverId} onChange={(event) => {
@@ -471,31 +499,47 @@ function AccessPanel({ portal }: { portal: PortalData }) {
   );
 }
 
-function People({ portal }: { portal: PortalData }) {
+function PersonAccess({ person, onResult }: { person: PortalData["people"][number]; onResult: (result: ActionResult) => void }) {
   const refresh = useRefresh();
+  const serverRole = person.role === "driver" ? "driver" : "customer";
+  const [role, setRole] = useState<"customer" | "driver">(serverRole);
+  const [active, setActive] = useState(person.active);
+  const [seen, setSeen] = useState(`${serverRole}:${person.active}`);
+  const next = `${serverRole}:${person.active}`;
+  if (seen !== next) {
+    setSeen(next);
+    setRole(serverRole);
+    setActive(person.active);
+  }
+  return (
+    <form className="staff" onSubmit={keepForm(async () => {
+      const response = await saveRoleAction(person.id, role, active);
+      onResult(response);
+      if (response.ok) refresh();
+    })}>
+      <div className="staff-top">
+        <div><h3>{person.name}</h3><p>{person.email}</p></div>
+        <div className="staff-ctl">
+          <select name="role" value={role} aria-label={`Access for ${person.name}`} onChange={(event) => setRole(event.target.value === "driver" ? "driver" : "customer")}>
+            <option value="customer">Passenger</option>
+            <option value="driver">Driver</option>
+          </select>
+          <label className="check"><input name="active" type="checkbox" checked={active} onChange={(event) => setActive(event.target.checked)} /> Active</label>
+          <button className="mini">Save</button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+function People({ portal }: { portal: PortalData }) {
   const [result, setResult] = useState<ActionResult | null>(null);
   const others = portal.people.filter((person) => person.id !== portal.user.id && person.role !== "admin");
   return (
     <div className="stack">
       {others.length === 0 && <p className="note">No other accounts yet. Someone can sign up, and you can then give them driver access.</p>}
       {others.map((person) => (
-        <form key={person.id} className="staff" action={async (form) => {
-          const response = await saveRoleAction(person.id, form.get("role") === "driver" ? "driver" : "customer", form.get("active") === "on");
-          setResult(response);
-          if (response.ok) refresh();
-        }}>
-          <div className="staff-top">
-            <div><h3>{person.name}</h3><p>{person.email}</p></div>
-            <div className="staff-ctl">
-              <select name="role" defaultValue={person.role === "driver" ? "driver" : "customer"} aria-label={`Access for ${person.name}`}>
-                <option value="customer">Passenger</option>
-                <option value="driver">Driver</option>
-              </select>
-              <label className="check"><input name="active" type="checkbox" defaultChecked={person.active} /> Active</label>
-              <button className="mini">Save</button>
-            </div>
-          </div>
-        </form>
+        <PersonAccess key={person.id} person={person} onResult={setResult} />
       ))}
       <Feedback result={result} />
     </div>
@@ -511,7 +555,7 @@ function TimeOffForm({ portal }: { portal: PortalData }) {
     <div className="time-off">
       <h3 className="sub">Time off</h3>
       <p className="note">Blocks that driver even when the time falls inside the working week.</p>
-      <form className="form-grid" action={async (form) => {
+      <form className="form-grid" onSubmit={keepForm(async (form) => {
         setPending(true);
         const response = await addTimeOffAction({
           driverId: String(form.get("driverId") ?? portal.user.id),
@@ -522,7 +566,7 @@ function TimeOffForm({ portal }: { portal: PortalData }) {
         setResult(response);
         setPending(false);
         if (response.ok) refresh();
-      }}>
+      })}>
         {portal.user.role === "admin" && (
           <div className="field"><label htmlFor="off-driver">Driver</label>
             <select id="off-driver" name="driverId" defaultValue={portal.user.id}>{drivers.map((driver) => <option key={driver.id} value={driver.id}>{driver.name}</option>)}</select>
@@ -571,13 +615,13 @@ function Profile({ user }: { user: PortalData["user"] }) {
   return (
     <section className="panel">
       <div className="panel-head"><div><p className="section-kicker">Your details</p><h2>Profile</h2></div></div>
-      <form className="form-grid" action={async (form) => {
+      <form className="form-grid" onSubmit={keepForm(async (form) => {
         setPending(true);
         const response = await saveProfileAction(String(form.get("name") ?? ""), String(form.get("phone") ?? ""));
         setResult(response);
         setPending(false);
         if (response.ok) refresh();
-      }}>
+      })}>
         <div className="field"><label htmlFor="name">Name</label><input id="name" name="name" required minLength={2} maxLength={80} defaultValue={user.name} /></div>
         <div className="field"><label htmlFor="profile-phone">Phone</label><input id="profile-phone" name="phone" type="tel" required minLength={7} maxLength={30} defaultValue={user.phone} /></div>
         <div className="field wide"><label>Email</label><input value={user.email} disabled /></div>
