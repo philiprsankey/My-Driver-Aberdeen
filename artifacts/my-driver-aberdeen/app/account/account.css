@@ -135,4 +135,12 @@
   .acct-hero { align-items: flex-start; flex-direction: column; }
   .day .slot { grid-template-columns: 1fr; gap: 4px; }
   .hours-day { grid-template-columns: 1fr; }
+  .form-grid .wide { min-width: 0; }
+  .hour-editor { max-width: 100%; overflow-x: auto; }
+  .hours-row { display: grid; grid-template-columns: minmax(6.4rem, 1.15fr) minmax(4.3rem, 1fr) minmax(4.3rem, 1fr) max-content; gap: 4px; align-items: center; }
+  .hours-row select, .hours-row input { width: 100%; min-width: 0; min-height: 40px; box-sizing: border-box; }
+  .hours-row select { padding: 0 2px 0 8px; font-size: 13px; }
+  .hours-row input { padding-inline: 2px; font-size: 12px; }
+  .hours-row input[type="time"]::-webkit-calendar-picker-indicator { display: none; }
+  .hours-row .mini { width: auto; min-height: 40px; padding-inline: 8px; letter-spacing: .02em; white-space: nowrap; }
 }
