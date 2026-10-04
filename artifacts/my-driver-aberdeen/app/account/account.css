@@ -143,4 +143,12 @@
   .hours-row input { padding-inline: 2px; font-size: 12px; }
   .hours-row input[type="time"]::-webkit-calendar-picker-indicator { display: none; }
   .hours-row .mini { width: auto; min-height: 40px; padding-inline: 8px; letter-spacing: .02em; white-space: nowrap; }
+  .bk-meta { grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+  .bk-meta .span-row { grid-column: 1 / -1; }
+  .approve .form-grid { grid-template-columns: 1fr 1fr; }
+  .approve .form-grid > :not(.pair) { grid-column: 1 / -1; }
+  .approve .form-grid > .pair { align-self: end; }
+  .approve-side .inline-row { flex-wrap: nowrap; }
+  .approve-side .inline-row input { min-width: 0; }
+  .approve-side .btn-danger { flex: 0 0 auto; white-space: nowrap; padding-inline: 12px; }
 }

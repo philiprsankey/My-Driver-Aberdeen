@@ -146,10 +146,10 @@ function JourneyCard({ journey, portal }: { journey: Journey; portal: PortalData
         <div><span>Destination</span><strong>{journey.destination}</strong></div>
       </div>
       <dl className="bk-meta">
-        <div><dt>Fare</dt><dd>{journey.useMembership ? "Included hire" : money(journey.amountPence)}</dd></div>
+        <div className="span-row"><dt>Fare</dt><dd>{journey.useMembership ? "Included hire" : money(journey.amountPence)}</dd></div>
         <div><dt>Passenger</dt><dd>{journey.customerName}</dd></div>
         <div><dt>Phone</dt><dd>{journey.phone}</dd></div>
-        <div><dt>Driver</dt><dd>{journey.driverName || "Not assigned"}</dd></div>
+        <div className="span-row"><dt>Driver</dt><dd>{journey.driverName || "Not assigned"}</dd></div>
         {journey.notes ? <div className="wide"><dt>Notes</dt><dd>{journey.notes}</dd></div> : null}
       </dl>
       {journey.status === "awaiting_payment" && journey.customerId === portal.user.id && journey.holdUntil && new Date(journey.holdUntil) > new Date() && (
@@ -207,8 +207,8 @@ function ApproveForm({ journey, portal }: { journey: Journey; portal: PortalData
             </select>
           </div>
         )}
-        <div className="field"><label htmlFor={`dur-${journey.id}`}>Journey length (minutes)</label><input id={`dur-${journey.id}`} name="duration" type="number" min={10} max={720} required defaultValue={60} /></div>
-        <div className="field"><label htmlFor={`buf-${journey.id}`}>Travel buffer (minutes)</label><input id={`buf-${journey.id}`} name="buffer" type="number" min={0} max={180} required defaultValue={30} /></div>
+        <div className="field pair"><label htmlFor={`dur-${journey.id}`}>Journey length (minutes)</label><input id={`dur-${journey.id}`} name="duration" type="number" min={10} max={720} required defaultValue={60} /></div>
+        <div className="field pair"><label htmlFor={`buf-${journey.id}`}>Travel buffer (minutes)</label><input id={`buf-${journey.id}`} name="buffer" type="number" min={0} max={180} required defaultValue={30} /></div>
         {journey.useMembership ? (
           <label className="check wide"><input name="eligible" type="checkbox" /> This journey is inside Aberdeen and the 10-mile membership area.</label>
         ) : journey.fareDestination ? (
