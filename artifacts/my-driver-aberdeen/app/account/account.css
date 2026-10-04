@@ -36,6 +36,11 @@
 .form-grid, .inline-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 16px; }
 .inline-form { margin-top: 14px; padding: 16px; background: #efece3; border: 1px solid var(--line); }
 .form-grid .wide, .inline-form .wide { grid-column: 1 / -1; }
+@media (min-width: 761px) {
+  .approve .form-grid:has(> .field:first-child:not(.pair)) { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr) minmax(0, 1fr); align-items: end; }
+  .approve .form-grid:has(> .field:first-child:not(.pair)) > :not(.field),
+  .approve .form-grid:has(> .field:first-child:not(.pair)) > .field:not(.pair):not(:first-child) { grid-column: 1 / -1; }
+}
 .field select { width: 100%; min-height: 48px; border: 1px solid #c8c6bc; padding: 10px 12px; background: rgba(251,249,244,.75); color: var(--ink); border-radius: 0; }
 .field input:disabled { opacity: .6; }
 .sel { min-height: 40px; border: 1px solid var(--line); background: var(--paper); padding: 0 10px; color: var(--ink); text-transform: capitalize; }
