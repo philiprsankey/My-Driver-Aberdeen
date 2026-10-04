@@ -156,4 +156,8 @@
   .approve-side .inline-row { flex-wrap: nowrap; }
   .approve-side .inline-row input { min-width: 0; }
   .approve-side .btn-danger { flex: 0 0 auto; white-space: nowrap; padding-inline: 12px; }
+  .staff-top { flex-direction: column; align-items: stretch; }
+  .staff-ctl { flex-wrap: nowrap; width: 100%; }
+  .staff-ctl select { flex: 1 1 auto; min-width: 0; width: 100%; }
+  .staff-ctl .check, .staff-ctl .mini { flex: 0 0 auto; white-space: nowrap; }
 }
