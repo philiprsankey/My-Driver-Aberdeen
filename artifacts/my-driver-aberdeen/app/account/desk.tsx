@@ -149,7 +149,7 @@ function JourneyCard({ journey, portal }: { journey: Journey; portal: PortalData
         <div className="span-row"><dt>Fare</dt><dd>{journey.useMembership ? "Included hire" : money(journey.amountPence)}</dd></div>
         <div><dt>Passenger</dt><dd>{journey.customerName}</dd></div>
         <div><dt>Phone</dt><dd>{journey.phone}</dd></div>
-        <div className="span-row"><dt>Driver</dt><dd>{journey.driverName || "Not assigned"}</dd></div>
+        {!(canApprove && portal.user.role === "admin") && <div className="span-row"><dt>Driver</dt><dd>{journey.driverName || "Not assigned"}</dd></div>}
         {journey.notes ? <div className="wide"><dt>Notes</dt><dd>{journey.notes}</dd></div> : null}
       </dl>
       {journey.status === "awaiting_payment" && journey.customerId === portal.user.id && journey.holdUntil && new Date(journey.holdUntil) > new Date() && (
