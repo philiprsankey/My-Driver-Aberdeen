@@ -134,11 +134,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .footer a:hover { color: white; }
 
 @media (max-width: 760px) {
-  html { scroll-padding-top: 86px; }
-  .site-header { height: 70px; padding: 0 19px; }
+  .site-header { height: 83px; padding: 0 19px; }
   .site-header.is-menu { background-color: rgba(16,35,43,.97); -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .brand { width: auto; height: auto; }
-  .brand img { width: 118px; height: 54px; }
   .nav-menu { margin-left: auto; display: inline-flex; align-items: center; gap: 9px; height: 38px; padding: 0 13px 0 12px; border: 1px solid rgba(255,255,255,.5); background: rgba(16,35,43,.28); color: #fff; cursor: pointer; font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
   .nav-menu:hover { border-color: rgba(215,183,126,.85); color: #e4c994; }
   .nav-menu:focus-visible { outline: 1px solid #d7b77e; outline-offset: 3px; }
@@ -150,7 +147,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .site-header.is-menu .nav-menu-mark span:first-child { transform: rotate(45deg); }
   .site-header.is-menu .nav-menu-mark span:nth-child(2) { opacity: 0; }
   .site-header.is-menu .nav-menu-mark span:last-child { transform: rotate(-45deg); }
-  .nav-backdrop { display: block; position: fixed; z-index: 1; inset: 70px 0 0; border: 0; background: rgba(8,18,22,.42); cursor: pointer; }
+  .nav-backdrop { display: block; position: fixed; z-index: 1; inset: 83px 0 0; border: 0; background: rgba(8,18,22,.42); cursor: pointer; }
   .nav-links { display: none; position: absolute; z-index: 2; top: 100%; left: 0; right: 0; margin: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px 0 14px; background: rgba(16,35,43,.97); border-top: 1px solid rgba(215,183,126,.42); box-shadow: 0 24px 48px rgba(0,0,0,.28); }
   .nav-links.is-open { display: flex; }
   .nav-links.is-open > a:not(.nav-cta) { display: flex; align-items: center; justify-content: space-between; min-height: 54px; padding: 0 22px; opacity: 1; font-size: 12px; font-weight: 600; letter-spacing: .18em; }
