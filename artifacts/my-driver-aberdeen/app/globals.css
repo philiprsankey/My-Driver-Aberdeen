@@ -26,9 +26,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .site-header { height: 83px; display: flex; align-items: center; position: fixed; z-index: 50; inset: 0 0 auto; padding: 0 clamp(22px, 6vw, 92px); border-bottom: 1px solid rgba(255,255,255,.18); color: #fff; transition: background-color .2s ease, box-shadow .2s ease; }
 .site-header.is-scrolled { background-color: rgba(16,35,43,.82); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,.12); }
-.brand { width: 145px; height: 70px; display: flex; align-items: center; overflow: hidden; }
-/* Centre the visible artwork, compensating for the SVG's uneven empty space. */
-.brand img { width: 112px; height: 76px; object-fit: cover; object-position: center; filter: brightness(1.5); transform: translateY(5.2%); }
+.brand { width: auto; height: auto; display: flex; align-items: center; overflow: hidden; }
+.brand img { width: 136px; height: 62px; object-fit: contain; object-position: center; filter: brightness(1.5); }
 .nav-links { margin-left: auto; display: flex; gap: clamp(18px, 3vw, 42px); align-items: center; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
 .nav-links a { opacity: .9; transition: opacity .2s ease; }
 .nav-links a:hover { opacity: .62; }
@@ -130,7 +129,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .footer { background: #0c1c22; color: #c5cecb; padding: 28px clamp(22px, 7vw, 108px); }
 .footer-inner { max-width: 1220px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; font-size: 10px; letter-spacing: .04em; }
 .footer-brand { display: flex; align-items: center; gap: 14px; }
-.footer-brand img { width: 90px; height: 60px; object-fit: cover; }
+.footer-brand img { width: 112px; height: 51px; object-fit: contain; }
 .footer-links { display: flex; gap: 23px; }
 .footer a:hover { color: white; }
 
@@ -138,8 +137,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   html { scroll-padding-top: 86px; }
   .site-header { height: 70px; padding: 0 19px; }
   .site-header.is-menu { background-color: rgba(16,35,43,.97); -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .brand { width: 100px; height: 62px; }
-  .brand img { width: 90px; height: 64px; }
+  .brand { width: auto; height: auto; }
+  .brand img { width: 118px; height: 54px; }
   .nav-menu { margin-left: auto; display: inline-flex; align-items: center; gap: 9px; height: 38px; padding: 0 13px 0 12px; border: 1px solid rgba(255,255,255,.5); background: rgba(16,35,43,.28); color: #fff; cursor: pointer; font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
   .nav-menu:hover { border-color: rgba(215,183,126,.85); color: #e4c994; }
   .nav-menu:focus-visible { outline: 1px solid #d7b77e; outline-offset: 3px; }

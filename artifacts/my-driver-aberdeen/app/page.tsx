@@ -152,7 +152,7 @@ export default async function Home() {
       </main>
       <footer className="footer">
         <div className="footer-inner">
-          <a className="footer-brand" href="#top"><Image src="/images/my-driver-aberdeen-logo.svg" alt="" width={1536} height={1024} /><span>Private hire, with a personal touch.</span></a>
+          <a className="footer-brand" href="#top"><Image src="/images/my-driver-aberdeen-logo.svg" alt="" width={1240} height={565} /><span>Private hire, with a personal touch.</span></a>
           <nav className="footer-links" aria-label="Footer navigation"><a href="#fares">Fares</a><a href="#membership">Membership</a><a href="#enquire">Contact</a><a href="mailto:info@mydriver-aberdeen.co.uk">Email</a></nav>
           <span>© {new Date().getFullYear()} My Driver Aberdeen</span>
         </div>

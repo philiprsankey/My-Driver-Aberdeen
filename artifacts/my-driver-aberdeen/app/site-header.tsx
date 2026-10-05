@@ -53,7 +53,7 @@ export default function SiteHeader({ solid = false, base = "", signedIn = false 
   return (
     <header className={`site-header${scrolled || open ? " is-scrolled" : ""}${open ? " is-menu" : ""}`}>
       <a className="brand" href={base || "#top"} aria-label="My Driver Aberdeen home" onClick={followLink}>
-        <Image src="/images/my-driver-aberdeen-logo.svg" alt="My Driver Aberdeen" width={1536} height={1024} priority />
+        <Image src="/images/my-driver-aberdeen-logo.svg" alt="My Driver Aberdeen" width={1240} height={565} priority />
       </a>
       <button type="button" className="nav-menu" aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen((current) => !current)}>
         <span className="nav-menu-mark" aria-hidden="true"><span /><span /><span /></span>
